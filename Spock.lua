@@ -1,47 +1,54 @@
 -- CONFIG
-local pastebinURL = "https://pastebin.com/raw/YOUR_KEY_HERE" -- Replace with your Pastebin raw link
 local team = "Pirate" -- or "Marine"
+local discordLink = "https://discord.gg/w9nrHXVH"
+local correctKey = "EFB9NtXR" -- Key que será entregue no Discord
 
 repeat wait() until game:IsLoaded()
 local plr = game.Players.LocalPlayer
 local tpService = game:GetService("TeleportService")
 
--- Fetch Key from Pastebin
-local validKey = game:HttpGet(pastebinURL)
-
--- GUI Input
-local function getKey()
+-- Key GUI
+local function showKeyGUI()
     local gui = Instance.new("ScreenGui", game.CoreGui)
     local frame = Instance.new("Frame", gui)
-    frame.Size = UDim2.new(0, 300, 0, 100)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -50)
+    frame.Size = UDim2.new(0, 350, 0, 150)
+    frame.Position = UDim2.new(0.5, -175, 0.5, -75)
     frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 
+    local msg = Instance.new("TextLabel", frame)
+    msg.Size = UDim2.new(1, -20, 0, 40)
+    msg.Position = UDim2.new(0,10,0,10)
+    msg.Text = "Get your KEY from our Discord:\n"..discordLink
+    msg.TextColor3 = Color3.fromRGB(255,255,255)
+    msg.TextWrapped = true
+    msg.TextScaled = true
+    msg.BackgroundTransparency = 1
+
     local box = Instance.new("TextBox", frame)
-    box.Size = UDim2.new(1, -20, 0, 50)
-    box.Position = UDim2.new(0,10,0,10)
+    box.Size = UDim2.new(1, -20, 0, 40)
+    box.Position = UDim2.new(0,10,0,60)
     box.PlaceholderText = "Enter your KEY..."
     box.Text = ""
     box.TextScaled = true
 
     local btn = Instance.new("TextButton", frame)
     btn.Size = UDim2.new(1, -20, 0, 30)
-    btn.Position = UDim2.new(0,10,0,65)
+    btn.Position = UDim2.new(0,10,0,110)
     btn.Text = "Submit"
 
     btn.MouseButton1Click:Connect(function()
-        if box.Text == validKey then
+        if box.Text == correctKey then
             gui:Destroy()
         else
             box.Text = ""
-            box.PlaceholderText = "Invalid key. Try again."
+            box.PlaceholderText = "Wrong key! Get it from Discord."
         end
     end)
 
     repeat wait() until not gui.Parent
 end
 
-getKey()
+showKeyGUI()
 
 -- Anti AFK
 plr.Idled:Connect(function()
@@ -67,7 +74,7 @@ pcall(function()
     end
 end)
 
--- Auto Team + Rejoin if full
+-- Auto Team + Rejoin
 local function pickTeam(t)
     local ok, res = pcall(function()
         return game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", t)
@@ -79,7 +86,6 @@ end
 
 pickTeam(team)
 
--- Auto Rejoin on teleport fail
 plr.OnTeleport:Connect(function(s)
     if s == Enum.TeleportState.Failed then
         wait(2)
